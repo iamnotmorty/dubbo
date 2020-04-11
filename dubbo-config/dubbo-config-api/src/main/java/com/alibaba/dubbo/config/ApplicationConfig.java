@@ -28,7 +28,9 @@ import java.util.Map;
 
 /**
  * ApplicationConfig
- *
+ * 应用信息配置
+ * 具体属性的解释，参见 《Dubbo 用户指南 —— dubbo:application》 文档。
+ * http://dubbo.apache.org/zh-cn/docs/user/references/xml/dubbo-application.html
  * @export
  */
 public class ApplicationConfig extends AbstractConfig {

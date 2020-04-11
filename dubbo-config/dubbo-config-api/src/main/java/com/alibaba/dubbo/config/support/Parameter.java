@@ -16,11 +16,17 @@
  */
 package com.alibaba.dubbo.config.support;
 
+import com.alibaba.dubbo.config.AbstractConfig;
+import com.alibaba.dubbo.config.AbstractInterfaceConfig;
+import com.alibaba.dubbo.config.AbstractReferenceConfig;
+import com.alibaba.dubbo.config.AbstractServiceConfig;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Map;
 
 /**
  * Parameter
@@ -30,16 +36,51 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface Parameter {
 
+    /**
+     * 键（别名）
+     * @return 注解设置的值默认为""
+     */
     String key() default "";
-
+    /**
+     * 是否必填
+     */
     boolean required() default false;
-
+    /**
+     * 是否忽略
+     */
     boolean excluded() default false;
-
+    /**
+     * 是否转义
+     */
     boolean escaped() default false;
-
+    /**
+     * 是否为属性
+     *
+     * 目前用于《事件通知》http://dubbo.apche.org/zh-cn/docs/user/demos/events-notify.html
+     */
     boolean attribute() default false;
-
+    /**
+     * 是否拼接默认属性，参见 {@link AbstractConfig#appendParameters(Map, Object, String)} 方法。
+     *
+     * 设置`#append() = true` 的属性，有下面几个：
+     * + {@link AbstractInterfaceConfig#getFilter()}
+     * + {@link AbstractInterfaceConfig#getListener()}
+     * + {@link AbstractReferenceConfig#getFilter()}
+     * + {@link AbstractReferenceConfig#getListener()}
+     * + {@link AbstractServiceConfig#getFilter()}
+     * + {@link AbstractServiceConfig @getListener()}
+     *
+     * 例如 AbstractServiceConfig
+     *
+     * 我们知道 ProviderConfig 和 ServiceConfig 继承 AbstractServiceConfig 类，
+     * 那么 `filter`, `listener` 对应相同的键。
+     *
+     * 在 ServiceConfig 中， 默认会继承 ProviderConfig 配置的 filter 和 listener。
+     * 所以这个属性，就是用于， 像 ServiceConfig 的这种情况， 从 ProviderConfig 读取父属性。
+     *
+     * 如果 `ProviderConfig.filter=aaaFilter` , `ServiceConfig.filter=bbbFilter` ，
+     * 最终暴露到 Dubbo URL 时，参数为 `service.filter=aaaFilter,bbbFilter`。
+     */
     boolean append() default false;
 
 }

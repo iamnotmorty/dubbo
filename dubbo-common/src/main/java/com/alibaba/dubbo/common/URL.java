@@ -65,6 +65,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * for this case, url protocol = null, url host = home, url path = user1/router.js
  * </ul>
  *
+ * 通用模型 贯穿整个RPC流程
+ *
  * @see java.net.URL
  * @see java.net.URI
  */
@@ -72,20 +74,35 @@ public final class URL implements Serializable {
 
     private static final long serialVersionUID = -1985165475234910535L;
 
+    /**
+     * 协议名
+     */
     private final String protocol;
-
+    /**
+     * 用户名
+     */
     private final String username;
-
+    /**
+     * 密码
+     */
     private final String password;
-
-    // by default, host to registry
+    /**
+     * by default, host to registry
+     * 地址
+     */
     private final String host;
-
-    // by default, port to registry
+    /**
+     * by default, host to registry
+     * 端口
+     */
     private final int port;
-
+    /**
+     * 路径（服务名）
+     */
     private final String path;
-
+    /**
+     * 参数集合
+     */
     private final Map<String, String> parameters;
 
     // ==== cache ====
@@ -1150,6 +1167,7 @@ public final class URL implements Serializable {
         }
     }
 
+    // ======== URL#buildString BEGIN ========
     private String buildString(boolean appendUser, boolean appendParameter, String... parameters) {
         return buildString(appendUser, appendParameter, false, false, parameters);
     }
@@ -1196,6 +1214,8 @@ public final class URL implements Serializable {
         }
         return buf.toString();
     }
+
+    // ======== URL#buildString END ========
 
     public java.net.URL toJavaURL() {
         try {
