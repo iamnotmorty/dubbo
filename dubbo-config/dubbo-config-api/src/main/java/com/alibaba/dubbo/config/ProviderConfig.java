@@ -29,7 +29,8 @@ import java.util.Arrays;
 
 /**
  * ProviderConfig
- *
+ * 实现 AbstractServiceConfig ，服务提供者缺省值配置。
+ * 参数详见：http://dubbo.io/books/dubbo-user-book/references/xml/dubbo-provider.html
  * @export
  * @see com.alibaba.dubbo.config.ProtocolConfig
  * @see com.alibaba.dubbo.config.ServiceConfig

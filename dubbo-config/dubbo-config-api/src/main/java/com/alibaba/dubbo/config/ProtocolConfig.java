@@ -32,7 +32,9 @@ import java.util.Map;
 
 /**
  * ProtocolConfig
- *
+ *  服务提供者协议配置
+ *  具体属性的解释，参见 《Dubbo 用户指南 —— dubbo:protocol》 文档。
+ *  http://dubbo.apache.org/zh-cn/docs/user/references/xml/dubbo-protocol.html
  * @export
  */
 public class ProtocolConfig extends AbstractConfig {
