@@ -34,10 +34,14 @@ import java.util.Set;
 
 /**
  * SpringExtensionFactory
+ * Spring ExtensionFactory 拓展实现类。
  */
 public class SpringExtensionFactory implements ExtensionFactory {
     private static final Logger logger = LoggerFactory.getLogger(SpringExtensionFactory.class);
 
+    /**
+     * Spring Context 集合
+     */
     private static final Set<ApplicationContext> contexts = new ConcurrentHashSet<ApplicationContext>();
 
     private static final ApplicationListener shutdownHookListener = new ShutdownHookListener();
@@ -65,7 +69,9 @@ public class SpringExtensionFactory implements ExtensionFactory {
     public <T> T getExtension(Class<T> type, String name) {
         for (ApplicationContext context : contexts) {
             if (context.containsBean(name)) {
+                // 获得属性
                 Object bean = context.getBean(name);
+                // 判断属性
                 if (type.isInstance(bean)) {
                     return (T) bean;
                 }

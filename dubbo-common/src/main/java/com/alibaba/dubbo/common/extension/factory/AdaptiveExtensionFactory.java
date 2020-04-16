@@ -27,12 +27,14 @@ import java.util.List;
 /**
  * AdaptiveExtensionFactory
  */
-@Adaptive
+@Adaptive //为 ExtensionFactory 的自适应拓展实现类。
 public class AdaptiveExtensionFactory implements ExtensionFactory {
 
+    // 拓展对象集合
     private final List<ExtensionFactory> factories;
 
     public AdaptiveExtensionFactory() {
+        // 使用 ExtensionLoader 加载拓展对象实现类。
         ExtensionLoader<ExtensionFactory> loader = ExtensionLoader.getExtensionLoader(ExtensionFactory.class);
         List<ExtensionFactory> list = new ArrayList<ExtensionFactory>();
         for (String name : loader.getSupportedExtensions()) {
@@ -41,8 +43,16 @@ public class AdaptiveExtensionFactory implements ExtensionFactory {
         factories = Collections.unmodifiableList(list);
     }
 
+    /**
+     *
+     * @param type object type. 拓展接口
+     * @param name object name. 拓展名
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> T getExtension(Class<T> type, String name) {
+        // 遍历工厂数组，直到获得到属性
         for (ExtensionFactory factory : factories) {
             T extension = factory.getExtension(type, name);
             if (extension != null) {
