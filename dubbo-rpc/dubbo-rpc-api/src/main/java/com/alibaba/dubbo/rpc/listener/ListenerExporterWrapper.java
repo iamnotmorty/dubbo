@@ -30,17 +30,24 @@ import java.util.List;
 public class ListenerExporterWrapper<T> implements Exporter<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(ListenerExporterWrapper.class);
-
+    /**
+     * 真实的 Exporter 对象
+     */
     private final Exporter<T> exporter;
-
+    /**
+     * Exporter 监听器数组
+     */
     private final List<ExporterListener> listeners;
 
+    //构造方法，循环 listeners ，执行 ExporterListener#exported(listener) 。
+    // 若执行过程中发生异常 RuntimeException ，打印错误日志，继续执行，最终才抛出。
     public ListenerExporterWrapper(Exporter<T> exporter, List<ExporterListener> listeners) {
         if (exporter == null) {
             throw new IllegalArgumentException("exporter == null");
         }
         this.exporter = exporter;
         this.listeners = listeners;
+        // 执行监听器
         if (listeners != null && !listeners.isEmpty()) {
             RuntimeException exception = null;
             for (ExporterListener listener : listeners) {
@@ -65,10 +72,13 @@ public class ListenerExporterWrapper<T> implements Exporter<T> {
     }
 
     @Override
+    // #unexport() 方法，循环 listeners ，执行 ExporterListener#unexported(listener) 。
+    // 若执行过程中发生异常 RuntimeException ，打印错误日志，继续执行，最终才抛出。
     public void unexport() {
         try {
             exporter.unexport();
         } finally {
+            // 执行监听器
             if (listeners != null && !listeners.isEmpty()) {
                 RuntimeException exception = null;
                 for (ExporterListener listener : listeners) {

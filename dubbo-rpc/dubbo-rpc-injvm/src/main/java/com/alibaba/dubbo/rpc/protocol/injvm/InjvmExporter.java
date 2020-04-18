@@ -26,21 +26,31 @@ import java.util.Map;
  * InjvmExporter
  */
 class InjvmExporter<T> extends AbstractExporter<T> {
-
+    /**
+     * 服务键
+     */
     private final String key;
-
+    /**
+     * Exporter 集合
+     *
+     * key: 服务键
+     *
+     */
     private final Map<String, Exporter<?>> exporterMap;
-
+    //构造方法，发起暴露，将自己添加到 exporterMap 中。
     InjvmExporter(Invoker<T> invoker, String key, Map<String, Exporter<?>> exporterMap) {
         super(invoker);
         this.key = key;
         this.exporterMap = exporterMap;
+        // 添加到 Exporter 集合
         exporterMap.put(key, this);
     }
 
     @Override
+    //#unexport() 方法，取消暴露，将自己移除出 exporterMap 中。
     public void unexport() {
         super.unexport();
+        // 移除出 Exporter 集合
         exporterMap.remove(key);
     }
 
