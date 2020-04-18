@@ -381,14 +381,24 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         unexported = true;
     }
 
+    /**
+     * 暴露Dubbo URL
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void doExportUrls() {
+        // 加载注册中心 URL 列表
         List<URL> registryURLs = loadRegistries(true);
+        // 循环 `protocols` ，逐个向注册中心分组暴露服务。
         for (ProtocolConfig protocolConfig : protocols) {
             doExportUrlsFor1Protocol(protocolConfig, registryURLs);
         }
     }
 
+    /**
+     * 基于单个协议，暴露服务
+     * @param protocolConfig 协议配置对象
+     * @param registryURLs 注册中心URL数组
+     */
     private void doExportUrlsFor1Protocol(ProtocolConfig protocolConfig, List<URL> registryURLs) {
         // 协议名
         String name = protocolConfig.getName();
@@ -529,11 +539,14 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                     .getExtension(url.getProtocol()).getConfigurator(url).configure(url);
         }
 
+        // 根据key获得value
         String scope = url.getParameter(Constants.SCOPE_KEY);
         // don't export when none is configured
+        // 当配置为scope="none"时不需要暴露
         if (!Constants.SCOPE_NONE.toString().equalsIgnoreCase(scope)) {
 
             // export to local if the config is not remote (export to remote only when config is remote)
+            // 本地暴露
             if (!Constants.SCOPE_REMOTE.toString().equalsIgnoreCase(scope)) {
                 exportLocal(url);
             }
@@ -577,14 +590,21 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         this.urls.add(url);
     }
 
+    /**
+     * 本地暴露服务
+     * @param url 注册中心URL
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void exportLocal(URL url) {
         if (!Constants.LOCAL_PROTOCOL.equalsIgnoreCase(url.getProtocol())) {
             URL local = URL.valueOf(url.toFullString())
-                    .setProtocol(Constants.LOCAL_PROTOCOL)
-                    .setHost(LOCALHOST)
-                    .setPort(0);
+                    .setProtocol(Constants.LOCAL_PROTOCOL) // injvm
+                    .setHost(LOCALHOST) //本地
+                    .setPort(0); //端口0
+            // 添加服务的真实类名，例如 DemoServiceImpl ，仅用于 RestProtocol 中。
             StaticContext.getContext(Constants.SERVICE_IMPL_CLASS).put(url.getServiceKey(), getServiceClass(ref));
+            // 使用 ProxyFactory 创建 Invoker 对象
+            // 使用 Protocol 暴露 Invoker 对象
             Exporter<?> exporter = protocol.export(
                     proxyFactory.getInvoker(ref, (Class) interfaceClass, local));
             exporters.add(exporter);
